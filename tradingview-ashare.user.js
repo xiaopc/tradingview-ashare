@@ -128,14 +128,19 @@ const tvhelperCss = `
 
   .menu-list {
     line-height: 1.25;
-    list-style : none
+    list-style : none;
+    margin     : -.5rem -.75rem 0 -.75rem
   }
 
   .menu-list a {
-    border-radius: 2px;
-    color        : #4a4a4a;
-    display      : block;
-    padding      : .5em .75em
+    border-radius  : 2px;
+    color          : #4a4a4a;
+    display        : block;
+    padding        : .3em .75em;
+    line-height    : 1;
+    align-items    : center;
+    justify-content: space-between;
+    display        : flex;
   }
 
   .menu-list a:hover {
@@ -155,10 +160,12 @@ const tvhelperCss = `
   }
 
   .menu-label {
-    color         : #7a7a7a;
-    font-size     : .75em;
-    letter-spacing: .1em;
-    text-transform: uppercase
+    color          : #7a7a7a;
+    font-size      : .75em;
+    letter-spacing : .1em;
+    text-transform : uppercase;
+    display        : flex;
+    justify-content: space-between;
   }
 
   .menu-label:not(:first-child) {
@@ -340,24 +347,19 @@ const tvhelperCss = `
     display: block;
   }
 
-  #tvhelper>.card .card-content ul.menu-list {
-    margin: 0 -0.75rem;
-  }
-
-  #tvhelper>.card .card-content ul.menu-list span.symbol-name {
-    display: inline-block;
-    max-width    : 6rem;
-    text-overflow: ellipsis;
+  #tvhelper>.card .card-content ul.menu-list span.symbol-name,
+  #tvhelper>.card .card-content p.menu-label span.plate-name{
+    display      : inline-block;
+    max-width    : 7rem;
     white-space  : nowrap;
     overflow     : hidden;
+    text-overflow: ellipsis;
+    display      : flex;
+    flex-grow    : 1;
   }
 
   .disabled {
     opacity: 0.6;
-  }
-
-  .fl-right {
-    float: right;
   }`;
 
 const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="eye-off-outline"><title>Eye Off</title><path d="M432 448a15.92 15.92 0 01-11.31-4.69l-352-352a16 16 0 0122.62-22.62l352 352A16 16 0 01432 448zM255.66 384c-41.49 0-81.5-12.28-118.92-36.5-34.07-22-64.74-53.51-88.7-91v-.08c19.94-28.57 41.78-52.73 65.24-72.21a2 2 0 00.14-2.94L93.5 161.38a2 2 0 00-2.71-.12c-24.92 21-48.05 46.76-69.08 76.92a31.92 31.92 0 00-.64 35.54c26.41 41.33 60.4 76.14 98.28 100.65C162 402 207.9 416 255.66 416a239.13 239.13 0 0075.8-12.58 2 2 0 00.77-3.31l-21.58-21.58a4 4 0 00-3.83-1 204.8 204.8 0 01-51.16 6.47zM490.84 238.6c-26.46-40.92-60.79-75.68-99.27-100.53C349 110.55 302 96 255.66 96a227.34 227.34 0 00-74.89 12.83 2 2 0 00-.75 3.31l21.55 21.55a4 4 0 003.88 1 192.82 192.82 0 0150.21-6.69c40.69 0 80.58 12.43 118.55 37 34.71 22.4 65.74 53.88 89.76 91a.13.13 0 010 .16 310.72 310.72 0 01-64.12 72.73 2 2 0 00-.15 2.95l19.9 19.89a2 2 0 002.7.13 343.49 343.49 0 0068.64-78.48 32.2 32.2 0 00-.1-34.78z"></path><path d="M256 160a95.88 95.88 0 00-21.37 2.4 2 2 0 00-1 3.38l112.59 112.56a2 2 0 003.38-1A96 96 0 00256 160zM165.78 233.66a2 2 0 00-3.38 1 96 96 0 00115 115 2 2 0 001-3.38z"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="caret-up-outline"><title>Caret Up</title><path d="M414 321.94L274.22 158.82a24 24 0 00-36.44 0L98 321.94c-13.34 15.57-2.28 39.62 18.22 39.62h279.6c20.5 0 31.56-24.05 18.18-39.62z"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="refresh-outline"><title>Refresh</title><path d="M320 146s24.36-12-64-12a160 160 0 10160 160" fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32"></path><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 58l80 80-80 80"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="search-outline"><title>Search</title><path d="M221.09 64a157.09 157.09 0 10157.09 157.09A157.1 157.1 0 00221.09 64z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"></path><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M338.29 338.29L448 448"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="eye-outline"><title>Eye</title><path d="M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path><circle cx="256" cy="256" r="80" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"></circle></symbol></svg>`;
@@ -541,7 +543,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             <li>
               <a onclick=${updateTvSymbol.bind(null, props.id)}>
                 <span class="symbol-name">${name}</span>
-                <span class="tag is-info is-light fl-right ${spanClass}">${percent}%</span>
+                <span class="tag is-info is-light ${spanClass}">${percent}%</span>
               </a>
             </li>`
         }
@@ -566,8 +568,9 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             const {group, groupid} = props;
             const visible = getPlateOpen(groupid);
             return html`
-            <p class="menu-label">${group.name}
-              <span class="fl-right">
+            <p class="menu-label">
+              <span class="plate-name">${group.name}</span>
+              <span>
                 <svg class="b-icon" onclick=${flipPlate.bind(null, groupid)}>
                   <use xlink:href="#eye${visible ? '' : '-off'}-outline"/>
                 </svg>
@@ -583,7 +586,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         <div class="card">
           <header class="card-header">
             <p class="card-header-title">同花顺小窗</p>
-            <span class="card-header-icon fl-right">
+            <span class="card-header-icon">
               <svg class="b-icon is-medium ${onRefresh ? 'disabled' : ''}"
                    onclick=${updatePlateData}>
                 <use xlink:href="#refresh-outline"/>
@@ -591,10 +594,10 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             </span>
           </header>
           <div class="card-content">
+            <div class="notification is-warning" style="display: ${!isLogin ? 'block' : 'none'};">
+              未登录，<a href="https://www.10jqka.com.cn/" rel="noopener noreferrer">到同花顺官网登录</a>
+            </div>
             <aside class="menu">
-              <div class="notification is-warning" style="display: ${!isLogin ? 'block' : 'none'};">
-                未登录，<a href="https://www.10jqka.com.cn/" rel="noopener noreferrer">到同花顺官网登录</a>
-              </div>
               ${plateData.map((g, gi) => html`<${Plate} group=${g} groupid=${gi} /`)}
             </aside>
           </div>
