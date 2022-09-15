@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Tradingview A股助手
 // @namespace    https://xpc.im/
-// @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/dist/tradingview-ashare.user.js
-// @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/dist/tradingview-ashare.user.js
+// @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
+// @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @version      0.1
 // @description  try to take over the world!
 // @author       xiaopc
