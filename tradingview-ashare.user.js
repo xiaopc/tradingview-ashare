@@ -399,11 +399,11 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
                 method: "GET",
                 url: `https://smartbox.gtimg.cn/s3/?v=2&q=${encodeURIComponent(text)}&t=all&c=1`,
                 onload: function (response) {
-                    const line = deU(response.responseText.split('\n').filter(l => l.startsWith('v_hint'))[0].slice(8, -2));
+                    const line = deU(response.responseText.split('\n').filter(l => l.startsWith('v_hint'))[0].slice(8, -1));
                     if (line.startsWith('N')) {
                         resolve([]);
                     } else {
-                        resolve(line.split('^').map(l => l.split('~')));
+                        resolve(_.flatten([line.split('^')]).map(l => l.split('~')));
                     }
                 },
                 onerror: function (err) {
