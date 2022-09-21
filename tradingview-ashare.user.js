@@ -3,7 +3,7 @@
 // @namespace    https://xpc.im/
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
-// @version      0.1
+// @version      0.2
 // @description  try to take over the world!
 // @author       xiaopc
 // @match        https://*.tradingview.com/chart/*
@@ -14,6 +14,7 @@
 // @connect      t.10jqka.com.cn
 // @connect      www.iwencai.com
 // @connect      qt.gtimg.cn
+// @connect      smartbox.gtimg.cn
 // @require      https://unpkg.com/preact@10.11.0/dist/preact.min.umd.js
 // @require      https://unpkg.com/preact@10.11.0/hooks/dist/hooks.umd.js
 // @require      https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/htm/3.1.0/htm.umd.min.js
@@ -362,17 +363,20 @@ const tvhelperCss = `
     opacity: 0.6;
   }`;
 
-const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="eye-off-outline"><title>Eye Off</title><path d="M432 448a15.92 15.92 0 01-11.31-4.69l-352-352a16 16 0 0122.62-22.62l352 352A16 16 0 01432 448zM255.66 384c-41.49 0-81.5-12.28-118.92-36.5-34.07-22-64.74-53.51-88.7-91v-.08c19.94-28.57 41.78-52.73 65.24-72.21a2 2 0 00.14-2.94L93.5 161.38a2 2 0 00-2.71-.12c-24.92 21-48.05 46.76-69.08 76.92a31.92 31.92 0 00-.64 35.54c26.41 41.33 60.4 76.14 98.28 100.65C162 402 207.9 416 255.66 416a239.13 239.13 0 0075.8-12.58 2 2 0 00.77-3.31l-21.58-21.58a4 4 0 00-3.83-1 204.8 204.8 0 01-51.16 6.47zM490.84 238.6c-26.46-40.92-60.79-75.68-99.27-100.53C349 110.55 302 96 255.66 96a227.34 227.34 0 00-74.89 12.83 2 2 0 00-.75 3.31l21.55 21.55a4 4 0 003.88 1 192.82 192.82 0 0150.21-6.69c40.69 0 80.58 12.43 118.55 37 34.71 22.4 65.74 53.88 89.76 91a.13.13 0 010 .16 310.72 310.72 0 01-64.12 72.73 2 2 0 00-.15 2.95l19.9 19.89a2 2 0 002.7.13 343.49 343.49 0 0068.64-78.48 32.2 32.2 0 00-.1-34.78z"></path><path d="M256 160a95.88 95.88 0 00-21.37 2.4 2 2 0 00-1 3.38l112.59 112.56a2 2 0 003.38-1A96 96 0 00256 160zM165.78 233.66a2 2 0 00-3.38 1 96 96 0 00115 115 2 2 0 001-3.38z"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="caret-up-outline"><title>Caret Up</title><path d="M414 321.94L274.22 158.82a24 24 0 00-36.44 0L98 321.94c-13.34 15.57-2.28 39.62 18.22 39.62h279.6c20.5 0 31.56-24.05 18.18-39.62z"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="refresh-outline"><title>Refresh</title><path d="M320 146s24.36-12-64-12a160 160 0 10160 160" fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32"></path><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 58l80 80-80 80"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="search-outline"><title>Search</title><path d="M221.09 64a157.09 157.09 0 10157.09 157.09A157.1 157.1 0 00221.09 64z" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"></path><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" d="M338.29 338.29L448 448"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="eye-outline"><title>Eye</title><path d="M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path><circle cx="256" cy="256" r="80" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"></circle></symbol></svg>`;
+const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="refresh-outline"><title>Refresh</title><path d="M320 146s24.36-12-64-12a160 160 0 10160 160" fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32"></path><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M256 58l80 80-80 80"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 460" id="search-circle"><title>Search Circle</title><path d="m225,33c-105.87,0 -192,86.13 -192,192s86.13,192 192,192s192,-86.13 192,-192s-86.13,-192 -192,-192zm91.31,283.31a16,16 0 0 1 -22.62,0l-42.84,-42.83a88.08,88.08 0 1 1 22.63,-22.63l42.83,42.84a16,16 0 0 1 0,22.62z" id="svg_1"/><circle cx="201" cy="201" id="svg_2" r="56"/></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 460" id="search-circle-outline"><title>Search Circle</title><path d="m230,54a176,176 0 1 0 176,176a176,176 0 0 0 -176,-176z" fill="none" id="svg_1" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/><path d="m206,134a72,72 0 1 0 72,72a72,72 0 0 0 -72,-72z" fill="none" id="svg_2" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"/><path d="m257.64,257.64l52.36,52.36" fill="none" id="svg_3" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32"/></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="eye-outline"><title>Eye</title><path d="M255.66 112c-77.94 0-157.89 45.11-220.83 135.33a16 16 0 00-.27 17.77C82.92 340.8 161.8 400 255.66 400c92.84 0 173.34-59.38 221.79-135.25a16.14 16.14 0 000-17.47C428.89 172.28 347.8 112 255.66 112z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"></path><circle cx="256" cy="256" r="80" fill="none" stroke="currentColor" stroke-miterlimit="10" stroke-width="32"></circle></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="eye-off-outline"><title>Eye Off</title><path d="M432 448a15.92 15.92 0 01-11.31-4.69l-352-352a16 16 0 0122.62-22.62l352 352A16 16 0 01432 448zM255.66 384c-41.49 0-81.5-12.28-118.92-36.5-34.07-22-64.74-53.51-88.7-91v-.08c19.94-28.57 41.78-52.73 65.24-72.21a2 2 0 00.14-2.94L93.5 161.38a2 2 0 00-2.71-.12c-24.92 21-48.05 46.76-69.08 76.92a31.92 31.92 0 00-.64 35.54c26.41 41.33 60.4 76.14 98.28 100.65C162 402 207.9 416 255.66 416a239.13 239.13 0 0075.8-12.58 2 2 0 00.77-3.31l-21.58-21.58a4 4 0 00-3.83-1 204.8 204.8 0 01-51.16 6.47zM490.84 238.6c-26.46-40.92-60.79-75.68-99.27-100.53C349 110.55 302 96 255.66 96a227.34 227.34 0 00-74.89 12.83 2 2 0 00-.75 3.31l21.55 21.55a4 4 0 003.88 1 192.82 192.82 0 0150.21-6.69c40.69 0 80.58 12.43 118.55 37 34.71 22.4 65.74 53.88 89.76 91a.13.13 0 010 .16 310.72 310.72 0 01-64.12 72.73 2 2 0 00-.15 2.95l19.9 19.89a2 2 0 002.7.13 343.49 343.49 0 0068.64-78.48 32.2 32.2 0 00-.1-34.78z"></path><path d="M256 160a95.88 95.88 0 00-21.37 2.4 2 2 0 00-1 3.38l112.59 112.56a2 2 0 003.38-1A96 96 0 00256 160zM165.78 233.66a2 2 0 00-3.38 1 96 96 0 00115 115 2 2 0 001-3.38z"></path></symbol><symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" id="caret-up-outline"><title>Caret Up</title><path d="M414 321.94L274.22 158.82a24 24 0 00-36.44 0L98 321.94c-13.34 15.57-2.28 39.62 18.22 39.62h279.6c20.5 0 31.56-24.05 18.18-39.62z"></path></symbol></svg>`;
 
 (function(window) {
     'use strict';
+    const marketMap = {sz: 'SZSE', sh: 'SSE', hk: 'HKEX', ny: 'NYSE', oq: 'NASDAQ', am: 'AMEX'};
+    const currencyMap = {sz: 'CNY', sh: 'CNY', hk: 'HKD', ny: 'USD', oq: 'USD', am: 'USD'};
+
     // utils
-    const zip = (keys, values) => Object.assign(...keys.map((k, i) => ({ [k]: values[i] })));
-    const cEl = function (tag) { return document.createElement(tag) };
-    const gID = function (id) { return document.getElementById(id) };
+    const cEl = function (tag) { return document.createElement(tag) }
+    const gID = function (id) { return document.getElementById(id) }
+    const deU = function (str) { return JSON.parse(`["${str}"]`)[0] }
 
     // gtimg
-    const fetcher = async (ids) => {
+    const gtRealtimeFetcher = async (ids) => {
         return new Promise((resolve, reject) => {
             GM_xmlhttpRequest({
                 method: 'GET',
@@ -388,18 +392,63 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
                 }
             });
         });
-    }
+    };
+    const gtSuggestRaw = async (text) => {
+        return new Promise((resolve, reject) => {
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: `https://smartbox.gtimg.cn/s3/?v=2&q=${encodeURIComponent(text)}&t=all&c=1`,
+                onload: function (response) {
+                    const line = deU(response.responseText.split('\n').filter(l => l.startsWith('v_hint'))[0].slice(8, -2));
+                    if (line.startsWith('N')) {
+                        resolve([]);
+                    } else {
+                        resolve(line.split('^').map(l => l.split('~')));
+                    }
+                },
+                onerror: function (err) {
+                    reject(err);
+                }
+            });
+        });
+    };
     const fetchDataToDict = function (data, keys) {
         return _.zipObject(Object.keys(data), Object.values(data).map(i => _.zipObject(keys, i.split('~'))));
-    }
+    };
     const getRealtimeBasic = async (...args) => {
         const keys = ['_', 'name', 'code', 'last', 'prev_close', 'open', 'volume', 's', 'b',
                       'buy1', 'buy1_amount', 'buy2', 'buy2_amount', 'buy3', 'buy3_amount', 'buy4', 'buy4_amount', 'buy5', 'buy5_amount',
                       'sell1', 'sell1_amount', 'sell2', 'sell2_amount', 'sell3', 'sell3_amount', 'sell4', 'sell4_amount', 'sell5', 'sell5_amount',
                       'latest_deal', 'time', 'change', 'change_rate', 'high', 'low'];
-        const data = await fetcher([...args]);
+        let ids = [...args];
+        ids = ids.map(i => (i.startsWith('ny') || i.startsWith('oq')) ? 'us' + i.slice(2) : i);
+        const data = await gtRealtimeFetcher(ids);
         return fetchDataToDict(data, keys);
-    }
+    };
+    const gtSuggest = async (text) => {
+        const arr = await gtSuggestRaw(text);
+        const typeMap = {GP: 'stock', 'GP-A': 'stock', ZS: 'index', ETF: 'fund', LOF: 'fund', 'QDII-LOF': 'fund'}; // KJ: 'fund'
+        return arr.map(i => {
+            const [type, description] = [typeMap[i[4]], i[2]];
+            if (type == undefined) return null;
+            let [exchange, symbol] = [i[0], i[1]];
+            if (symbol.includes('.')) {
+                [symbol, exchange] = symbol.split('.');
+                if (exchange == 'n') exchange = 'ny';
+            } else if (exchange == 'hk') {
+                symbol = Number(symbol).toString();
+            }
+            return {
+                "symbol": symbol,
+                "description": description,
+                "type": type,
+                "exchange": marketMap[exchange],
+                "currency_code": currencyMap[exchange],
+                "provider_id": "ice",
+                "country": currencyMap[exchange].slice(0, 2)
+            };
+        }).filter(i => !!i);
+    };
 
     // tonghuashun
     const getThsSelfRaw = async () => {
@@ -438,13 +487,16 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         if (obj[mark] == '33' || obj[mark] == '36' || obj[mark] == '32') return 'sz' + obj[stock];
         if (obj[mark] == '16') return 'sh' + obj[stock].replace(/^1B/, '00');
         if (obj[mark] == '120' && obj[stock].startsWith('00')) return 'sh' + obj[stock];
+        if (obj[mark] == '177') return 'hk0' + obj[stock].slice(2);
+        if (obj[mark] == '169') return 'ny' + obj[stock];
+        if (obj[mark] == '185') return 'oq' + obj[stock];
         return null;
-    }
+    };
     const getThsSelf = async () => {
         const obj = await getThsSelfRaw();
         if (obj.errorCode != 0) return obj.errorMsg;
         return obj.result.map(obj => parseMarketCode(obj, 'marketid', 'code')).filter(c => !!c);
-    }
+    };
     const getWencaiPlate = async () => {
         const obj = await getWencaiPlateRaw();
         if (!obj.success) return []; // TODO: show error
@@ -456,7 +508,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
                 items: stocks
             };
         });
-    }
+    };
 
     // render app
     const {h, render} = preact;
@@ -468,6 +520,22 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         const [marketData, setMarketData] = useState({});
         const [onRefresh, setOnRefresh] = useState(false);
         const [isLogin, setIsLogin] = useState(true);
+        const [enableSearchHook, setEnableSearchHook] = useState(false);
+        const { fetch: originalFetch } = window;
+
+        useEffect(() =>{
+            window.fetch = enableSearchHook ? async (...args) => {
+                const [resource, config] = args;
+                if (!resource.startsWith('https://symbol-search')) return await originalFetch(resource, config);
+                const kw = new URL(resource).searchParams.get('text');
+                const symbols = await gtSuggest(kw);
+                return {
+                    ok: true,
+                    status: 200,
+                    json: () => ({symbols: symbols, symbols_remaining: 0})
+                };
+            } : originalFetch;
+        }, [enableSearchHook]);
 
         const cachePlateData = (data) => { lscache.set('plateData', data, 1e15); };
         const updatePlateData = async () => {
@@ -528,14 +596,15 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
 
         function updateTvSymbol(id) {
             if (!Object.keys(window).includes('_exposed_chartWidgetCollection') || typeof window._exposed_chartWidgetCollection.setSymbol != 'function') return;
-            const market = {sz: 'SZSE', sh: 'SSE'};
-            const tvSymbol = market[id.slice(0, 2)] + ':' + id.slice(2);
+            const [market, code] = [marketMap[id.slice(0, 2)], id.slice(2)];
+            const tvSymbol = market + ':' + (market == 'HKEX' ? Number(code).toString() : code);
             window._exposed_chartWidgetCollection.setSymbol(tvSymbol);
         }
         function Item (props) {
-            const marketItem = marketData ? marketData[props.id] : null;
-            const name = marketItem ? marketItem.name : props.id;
-            const percent = marketItem ? marketData[props.id].change_rate : '-';
+            const id = (props.id.startsWith('ny') || props.id.startsWith('oq')) ? 'us' + props.id.slice(2) : props.id;
+            const marketItem = marketData ? marketData[id] : null;
+            const name = marketItem ? marketItem.name : id;
+            const percent = marketItem ? marketItem.change_rate : '-';
             let spanClass = '';
             if (percent > 0) spanClass = 'is-success';
             else if (percent < 0) spanClass = 'is-danger';
@@ -587,6 +656,10 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
           <header class="card-header">
             <p class="card-header-title">同花顺小窗</p>
             <span class="card-header-icon">
+              <svg class="b-icon is-medium"
+                   onclick=${() => setEnableSearchHook(!enableSearchHook)}>
+                <use xlink:href="#search-circle${enableSearchHook ? '' : '-outline'}"/>
+              </svg>
               <svg class="b-icon is-medium ${onRefresh ? 'disabled' : ''}"
                    onclick=${updatePlateData}>
                 <use xlink:href="#refresh-outline"/>
