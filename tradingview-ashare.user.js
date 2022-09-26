@@ -3,7 +3,7 @@
 // @namespace    https://xpc.im/
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
-// @version      0.2
+// @version      0.3
 // @description  try to take over the world!
 // @author       xiaopc
 // @match        https://*.tradingview.com/chart/*
@@ -367,7 +367,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
 
 (function(window) {
     'use strict';
-    const marketMap = {sz: 'SZSE', sh: 'SSE', hk: 'HKEX', ny: 'NYSE', oq: 'NASDAQ', am: 'AMEX'};
+    const marketMap = {sz: 'SZSE', sh: 'SSE', hk: 'HKEX', ny: 'NYSE', oq: 'NASDAQ', am: 'AMEX'}; // nq: 三板
     const currencyMap = {sz: 'CNY', sh: 'CNY', hk: 'HKD', ny: 'USD', oq: 'USD', am: 'USD'};
 
     // utils
@@ -438,6 +438,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             } else if (exchange == 'hk') {
                 symbol = Number(symbol).toString();
             }
+            if (marketMap[exchange] == undefined) return null;
             return {
                 "symbol": symbol,
                 "description": description,
@@ -661,7 +662,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
                 <use xlink:href="#search-circle${enableSearchHook ? '' : '-outline'}"/>
               </svg>
               <svg class="b-icon is-medium ${onRefresh ? 'disabled' : ''}"
-                   onclick=${updatePlateData}>
+                   onclick=${async () => { await updatePlateData(); setMarketData({}); }}>
                 <use xlink:href="#refresh-outline"/>
               </svg>
             </span>
