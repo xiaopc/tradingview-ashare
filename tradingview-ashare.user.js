@@ -3,7 +3,7 @@
 // @namespace    https://xpc.im/
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
-// @version      0.3
+// @version      0.4
 // @description  try to take over the world!
 // @author       xiaopc
 // @match        https://*.tradingview.com/chart/*
@@ -519,6 +519,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
     function App (props) {
         const [plateData, setPlateData] = useState([]);
         const [marketData, setMarketData] = useState({});
+        const [marketCache, setMarketCache] = useState({});
         const [onRefresh, setOnRefresh] = useState(false);
         const [isLogin, setIsLogin] = useState(true);
         const [enableSearchHook, setEnableSearchHook] = useState(false);
@@ -578,15 +579,22 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         }, []);
 
         let interval;
+        const getNow = () => new Date().getTime();
         const updateMarketData = async () => {
+            let now = getNow();
             const stocks = _.uniq(_.flatten(plateData.filter((_, i) => getPlateOpen(i)).map(g => g.items)));
-            const pass = _.slice(_.difference(stocks, Object.keys(marketData)), 0, 20);
+            const noDataStocks = _.difference(stocks, Object.keys(marketCache));
+            const needUpdateStocks = Object.keys(marketCache).filter(i => stocks.includes(i)).sort((a, b) => marketCache[a] - marketCache[b]);
+            const pass = _.slice([...noDataStocks, ...needUpdateStocks], 0, 20);
             if (pass.length == 0) {
-                clearInterval(interval);
+                // clearInterval(interval);
                 return;
             }
             const passData = await getRealtimeBasic(...pass);
+            const passStocks = Object.keys(passData);
+            const passCache = _.zipObject(passStocks, _.fill(Array(passStocks.length), getNow()));
             setMarketData({...marketData, ...passData});
+            setMarketCache({...marketCache, ...passCache});
             // console.log(passData, marketData);
         };
         useEffect(() => {
@@ -662,7 +670,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
                 <use xlink:href="#search-circle${enableSearchHook ? '' : '-outline'}"/>
               </svg>
               <svg class="b-icon is-medium ${onRefresh ? 'disabled' : ''}"
-                   onclick=${async () => { await updatePlateData(); setMarketData({}); }}>
+                   onclick=${updatePlateData}>
                 <use xlink:href="#refresh-outline"/>
               </svg>
             </span>
