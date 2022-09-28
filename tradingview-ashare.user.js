@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Tradingview A股助手
-// @namespace    https://xpc.im/
+// @namespace    https://github.com/xiaopc/tradingview-ashare
+// @description  给 Tradingview 增加同花顺同步、拼音搜索等功能
+// @version      0.4
+// @author       xiaopc
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
-// @version      0.4
-// @description  try to take over the world!
-// @author       xiaopc
+// @supportURL   https://github.com/xiaopc/tradingview-ashare/issues
 // @match        https://*.tradingview.com/chart/*
 // @icon         https://static.tradingview.com/static/images/favicon.ico
 // @grant        unsafeWindow
