@@ -2,7 +2,7 @@
 // @name         Tradingview A股助手
 // @namespace    https://github.com/xiaopc/tradingview-ashare
 // @description  给 Tradingview 增加同花顺同步、拼音搜索等功能
-// @version      0.4
+// @version      0.5
 // @author       xiaopc
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
@@ -305,9 +305,9 @@ const tvhelperCss = `
     height    : 18rem;
     min-height: 3rem;
     max-height: 95vh;
-    right     : 3rem;
-    bottom    : 0.5rem;
-    margin    : 0;
+    right     : 2rem;
+    bottom    : 0;
+    margin    : 0.8rem;
     padding   : 0;
     overflow  : auto;
     resize    : vertical;
@@ -360,6 +360,24 @@ const tvhelperCss = `
     flex-grow    : 1;
   }
 
+  #tvhelper-tooltip {
+    position: absolute;
+    display : none;
+    width   : 33rem;
+    height  : 18rem;
+    margin  : 0.8rem;
+    right   : 16rem;
+    bottom  : 0rem;
+  }
+
+  #tvhelper-tooltip.active {
+    display: block;
+  }
+
+  #tvhelper-tooltip img {
+    width: 100%;
+  }
+
   .disabled {
     opacity: 0.6;
   }`;
@@ -372,9 +390,9 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
     const currencyMap = {sz: 'CNY', sh: 'CNY', hk: 'HKD', ny: 'USD', oq: 'USD', am: 'USD'};
 
     // utils
-    const cEl = function (tag) { return document.createElement(tag) }
-    const gID = function (id) { return document.getElementById(id) }
-    const deU = function (str) { return JSON.parse(`["${str}"]`)[0] }
+    const cEl = function (tag) { return document.createElement(tag) };
+    const gID = function (id) { return document.getElementById(id) };
+    const deU = function (str) { return JSON.parse(`["${str}"]`)[0] };
 
     // gtimg
     const gtRealtimeFetcher = async (ids) => {
@@ -580,7 +598,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         }, []);
 
         let interval;
-        const getNow = () => new Date().getTime();
+        const getNow = (div = 0) => Math.floor(new Date().getTime() / (div == 0 ? 1 : div));
         const updateMarketData = async () => {
             let now = getNow();
             const stocks = _.uniq(_.flatten(plateData.filter((_, i) => getPlateOpen(i)).map(g => g.items)));
@@ -596,7 +614,6 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             const passCache = _.zipObject(passStocks, _.fill(Array(passStocks.length), getNow()));
             setMarketData({...marketData, ...passData});
             setMarketCache({...marketCache, ...passCache});
-            // console.log(passData, marketData);
         };
         useEffect(() => {
             if (plateData.length == 0) return;
@@ -610,6 +627,16 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             const tvSymbol = market + ':' + (market == 'HKEX' ? Number(code).toString() : code);
             window._exposed_chartWidgetCollection.setSymbol(tvSymbol);
         }
+        const showIntraday = _.debounce((e) => {
+            if (e.type != "mouseover") {
+                tooltipElement.classList.remove('active');
+                return;
+            }
+            const id = e.srcElement.dataset.id;
+            if (!id.startsWith('sz') && !id.match(/^sh[^0]/)) return;
+            tooltipElement.innerHTML = `<img src="https://image.sinajs.cn/newchart/min/n/${id}.gif?_=${getNow(100000)}" referrerpolicy="no-referrer">`;
+            tooltipElement.classList.add('active');
+        }, 1000);
         function Item (props) {
             const id = (props.id.startsWith('ny') || props.id.startsWith('oq')) ? 'us' + props.id.slice(2) : props.id;
             const marketItem = marketData ? marketData[id] : null;
@@ -622,7 +649,8 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             <li>
               <a onclick=${updateTvSymbol.bind(null, props.id)}>
                 <span class="symbol-name">${name}</span>
-                <span class="tag is-info is-light ${spanClass}">${percent}%</span>
+                <span class="tag is-info is-light ${spanClass}" data-id=${id} onmouseover=${showIntraday} onmouseout=${showIntraday}
+                >${percent}%</span>
               </a>
             </li>`
         }
@@ -678,7 +706,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
           </header>
           <div class="card-content">
             <div class="notification is-warning" style="display: ${!isLogin ? 'block' : 'none'};">
-              未登录，<a href="https://www.10jqka.com.cn/" rel="noopener noreferrer">到同花顺官网登录</a>
+              未登录，<a href="https://www.10jqka.com.cn/" rel="noopener noreferrer" target="_blank">到同花顺官网登录</a>
             </div>
             <aside class="menu">
               ${plateData.map((g, gi) => html`<${Plate} group=${g} groupid=${gi} /`)}
@@ -687,12 +715,14 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         </div>`
     }
 
-    const container = cEl('div'), svgElement = cEl('div');
+    const container = cEl('div'), svgElement = cEl('div'), tooltipElement = cEl('div');
     container.id = 'tvhelper';
-    container.className = 'card';
+    container.className = tooltipElement.className = 'card';
+    tooltipElement.id = 'tvhelper-tooltip';
     svgElement.innerHTML = svgSprite;
     document.body.appendChild(svgElement);
     document.body.appendChild(container);
+    document.body.appendChild(tooltipElement);
     render(html`<${App} />`, container);
 
     GM_addStyle(tvhelperCss);
