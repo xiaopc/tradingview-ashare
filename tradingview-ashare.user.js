@@ -386,8 +386,8 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
 
 (function(window) {
     'use strict';
-    const marketMap = {sz: 'SZSE', sh: 'SSE', hk: 'HKEX', ny: 'NYSE', oq: 'NASDAQ', am: 'AMEX'}; // nq: 三板
-    const currencyMap = {sz: 'CNY', sh: 'CNY', hk: 'HKD', ny: 'USD', oq: 'USD', am: 'USD'};
+    const marketMap = {sz: 'SZSE', sh: 'SSE', hk: 'HKEX', hsi: 'HSI', ny: 'NYSE', oq: 'NASDAQ', am: 'AMEX'}; // nq: 三板
+    const currencyMap = {sz: 'CNY', sh: 'CNY', hk: 'HKD', hsi: 'HKD', ny: 'USD', oq: 'USD', am: 'USD'};
 
     // utils
     const cEl = function (tag) { return document.createElement(tag) };
@@ -440,7 +440,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
                       'sell1', 'sell1_amount', 'sell2', 'sell2_amount', 'sell3', 'sell3_amount', 'sell4', 'sell4_amount', 'sell5', 'sell5_amount',
                       'latest_deal', 'time', 'change', 'change_rate', 'high', 'low'];
         let ids = [...args];
-        ids = ids.map(i => (i.startsWith('ny') || i.startsWith('oq')) ? 'us' + i.slice(2) : i);
+        ids = ids.map(i => (i.startsWith('ny') || i.startsWith('oq') || i.startsWith('am')) ? 'us' + i.slice(2) : i);
         const data = await gtRealtimeFetcher(ids);
         return fetchDataToDict(data, keys);
     };
@@ -454,8 +454,10 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             if (symbol.includes('.')) {
                 [symbol, exchange] = symbol.split('.');
                 if (exchange == 'n') exchange = 'ny';
-            } else if (exchange == 'hk') {
+            } else if (exchange == 'hk' && type == typeMap.GP) {
                 symbol = Number(symbol).toString();
+            } else if (exchange == 'hk' && type == typeMap.ZS) {
+                exchange = 'hsi';
             }
             if (marketMap[exchange] == undefined) return null;
             return {
