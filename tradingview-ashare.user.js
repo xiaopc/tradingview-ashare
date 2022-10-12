@@ -2,7 +2,7 @@
 // @name         Tradingview A股助手
 // @namespace    https://github.com/xiaopc/tradingview-ashare
 // @description  给 Tradingview 增加同花顺同步、拼音搜索等功能
-// @version      0.5
+// @version      0.6
 // @author       xiaopc
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
@@ -116,7 +116,8 @@ const tvhelperCss = `
     background-color: #f5f5f5;
     border-radius   : .375em;
     position        : relative;
-    padding         : 1.25rem 2.5rem 1.25rem 1.5rem
+    padding         : 1rem 2.25rem 1rem 1.25rem;
+    margin          : 1rem 0
   }
 
   .notification.is-warning {
@@ -151,8 +152,7 @@ const tvhelperCss = `
   }
 
   .menu-list a.is-active {
-    background-color: #485fc7;
-    color           : #fff
+    background-color: #eff5fb
   }
 
   .menu-list li ul {
@@ -370,7 +370,7 @@ const tvhelperCss = `
     bottom  : 0rem;
   }
 
-  #tvhelper-tooltip.active {
+  #tvhelper-tooltip.is-active {
     display: block;
   }
 
@@ -532,33 +532,69 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         });
     };
 
+    // tradingview
+    const { fetch: originalFetch, _exposed_chartWidgetCollection: tvChart } = window;
+    const originalSetSymbol = tvChart?.setSymbol;
+    const toTvSymbol = (id) => {
+        const [market, code] = [marketMap[id.slice(0, 2)], id.slice(2)];
+        return market + ':' + (market == 'HKEX' ? Number(code).toString() : code);
+    };
+    const fromTvSymbol = (symbol) => {
+        if (!symbol) return null;
+        let [market, code] = symbol.split(':');
+        if (market == 'HKEX') code = _.padStart(code, 5, '0');
+        market = _.findKey(marketMap, (m) => m == market);
+        if (market == undefined) return null;
+        return market + code;
+    };
+    const updateTvSymbol = (id) => {
+        if (typeof tvChart?.setSymbol != 'function') return;
+        tvChart.setSymbol(toTvSymbol(id));
+    };
+    const hookedTvSearch = async (...args) => {
+        const [resource, config] = args;
+        if (!resource.startsWith('https://symbol-search'))
+            return await originalFetch(resource, config);
+        const kw = new URL(resource).searchParams.get('text');
+        const symbols = await gtSuggest(kw);
+        return {
+            ok: true,
+            status: 200,
+            json: () => ({symbols: symbols, symbols_remaining: 0})
+        };
+    };
+
     // render app
     const {h, render} = preact;
     const {useState, useEffect, useMemo} = preactHooks;
     const html = htm.bind(h);
 
     function App (props) {
+        // data
         const [plateData, setPlateData] = useState([]);
         const [marketData, setMarketData] = useState({});
         const [marketCache, setMarketCache] = useState({});
+        // ui
         const [onRefresh, setOnRefresh] = useState(false);
         const [isLogin, setIsLogin] = useState(true);
+        // hook
         const [enableSearchHook, setEnableSearchHook] = useState(false);
-        const { fetch: originalFetch } = window;
+        const [curSymbolTv, setCurSymbolTv] = useState(null);
 
         useEffect(() =>{
-            window.fetch = enableSearchHook ? async (...args) => {
-                const [resource, config] = args;
-                if (!resource.startsWith('https://symbol-search')) return await originalFetch(resource, config);
-                const kw = new URL(resource).searchParams.get('text');
-                const symbols = await gtSuggest(kw);
-                return {
-                    ok: true,
-                    status: 200,
-                    json: () => ({symbols: symbols, symbols_remaining: 0})
-                };
-            } : originalFetch;
+            window.fetch = enableSearchHook ? hookedTvSearch : originalFetch;
         }, [enableSearchHook]);
+        useEffect(() => {
+            if (typeof originalSetSymbol != 'function') return;
+            // const tvSymbols = tvChart.chartsSymbols();
+            // if (Object.values(tvSymbols).length > 0) {
+            //     setCurSymbolTv(fromTvSymbol(Object.values(tvSymbols)[0].symbol));
+            // }
+            tvChart.setSymbol = (...args) => {
+                setCurSymbolTv(fromTvSymbol(args[0]));
+                originalSetSymbol(...args);
+            };
+        }, []);
 
         const cachePlateData = (data) => { lscache.set('plateData', data, 1e15); };
         const updatePlateData = async () => {
@@ -623,21 +659,15 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             return () => { clearInterval(interval) };
         }, [plateData, marketData]);
 
-        function updateTvSymbol(id) {
-            if (!Object.keys(window).includes('_exposed_chartWidgetCollection') || typeof window._exposed_chartWidgetCollection.setSymbol != 'function') return;
-            const [market, code] = [marketMap[id.slice(0, 2)], id.slice(2)];
-            const tvSymbol = market + ':' + (market == 'HKEX' ? Number(code).toString() : code);
-            window._exposed_chartWidgetCollection.setSymbol(tvSymbol);
-        }
         const showIntraday = _.debounce((e) => {
             if (e.type != "mouseover") {
-                tooltipElement.classList.remove('active');
+                tooltipElement.classList.remove('is-active');
                 return;
             }
             const id = e.srcElement.dataset.id;
             if (!id.startsWith('sz') && !id.match(/^sh[^0]/)) return;
             tooltipElement.innerHTML = `<img src="https://image.sinajs.cn/newchart/min/n/${id}.gif?_=${getNow(100000)}" referrerpolicy="no-referrer">`;
-            tooltipElement.classList.add('active');
+            tooltipElement.classList.add('is-active');
         }, 1000);
         function Item (props) {
             const id = (props.id.startsWith('ny') || props.id.startsWith('oq')) ? 'us' + props.id.slice(2) : props.id;
@@ -649,7 +679,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             else if (percent < 0) spanClass = 'is-danger';
             return html`
             <li>
-              <a onclick=${updateTvSymbol.bind(null, props.id)}>
+              <a onclick=${updateTvSymbol.bind(null, props.id)} class="${props.id == curSymbolTv ? 'is-active' : ''}">
                 <span class="symbol-name">${name}</span>
                 <span class="tag is-info is-light ${spanClass}" data-id=${id} onmouseover=${showIntraday} onmouseout=${showIntraday}
                 >${percent}%</span>
