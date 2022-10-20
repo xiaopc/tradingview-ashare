@@ -2,7 +2,7 @@
 // @name         Tradingview A股助手
 // @namespace    https://github.com/xiaopc/tradingview-ashare
 // @description  给 Tradingview 增加同花顺同步、拼音搜索等功能
-// @version      0.6
+// @version      0.7
 // @author       xiaopc
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
@@ -305,7 +305,7 @@ const tvhelperCss = `
     height    : 18rem;
     min-height: 3rem;
     max-height: 95vh;
-    right     : 2rem;
+    right     : 2.2rem;
     bottom    : 0;
     margin    : 0.8rem;
     padding   : 0;
@@ -477,7 +477,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         return new Promise((resolve, reject) => {
             GM_xmlhttpRequest({
                 method: "GET",
-                url: "http://t.10jqka.com.cn/newcircle/group/getSelfStockWithMarket",
+                url: "https://t.10jqka.com.cn/newcircle/group/getSelfStockWithMarket",
                 responseType: 'json',
                 onload: function (response) {
                     resolve(response.response);
@@ -492,7 +492,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         return new Promise((resolve, reject) => {
             GM_xmlhttpRequest({
                 method: "POST",
-                url: "http://www.iwencai.com/unifiedwap/self-stock/plate/list",
+                url: "https://www.iwencai.com/unifiedwap/self-stock/plate/list",
                 data: 'stocks=0&ths=0',
                 responseType: 'json',
                 onload: function (response) {
@@ -547,6 +547,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         if (market == undefined) return null;
         return market + code;
     };
+    let latestSearchKw = null, latestSearchRes = null;
     const updateTvSymbol = (id) => {
         if (typeof tvChart?.setSymbol != 'function') return;
         tvChart.setSymbol(toTvSymbol(id));
@@ -556,7 +557,9 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
         if (!resource.startsWith('https://symbol-search'))
             return await originalFetch(resource, config);
         const kw = new URL(resource).searchParams.get('text');
+        latestSearchKw = kw;
         const symbols = await gtSuggest(kw);
+        latestSearchRes = symbols;
         return {
             ok: true,
             status: 200,
@@ -592,7 +595,11 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             // }
             tvChart.setSymbol = (...args) => {
                 setCurSymbolTv(fromTvSymbol(args[0]));
-                originalSetSymbol(...args);
+                if (latestSearchKw == args[0] && latestSearchRes.length > 0) {
+                    originalSetSymbol(latestSearchRes[0].symbol);
+                } else {
+                    originalSetSymbol(...args);
+                }
             };
         }, []);
 
@@ -738,7 +745,12 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
           </header>
           <div class="card-content">
             <div class="notification is-warning" style="display: ${!isLogin ? 'block' : 'none'};">
-              未登录，<a href="https://www.10jqka.com.cn/" rel="noopener noreferrer" target="_blank">到同花顺官网登录</a>
+              未登录，
+              <a
+                href="https://www.iwencai.com/unifiedwap/home/index/"
+                title="在同花顺问财登录，可同时登录同花顺主站 10jqka.com.cn"
+                rel="noopener noreferrer"
+                target="_blank">到同花顺问财官网登录</a>
             </div>
             <aside class="menu">
               ${plateData.map((g, gi) => html`<${Plate} group=${g} groupid=${gi} /`)}
