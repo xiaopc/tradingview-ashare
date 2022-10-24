@@ -2,7 +2,7 @@
 // @name         Tradingview A股助手
 // @namespace    https://github.com/xiaopc/tradingview-ashare
 // @description  给 Tradingview 增加同花顺同步、拼音搜索等功能
-// @version      0.7
+// @version      0.7.1
 // @author       xiaopc
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
@@ -25,7 +25,7 @@
 
 // config
 // * 显示智能分组
-const SHOW_WENCAI_PLATE = false;
+const SHOW_WENCAI_PLATE = true;
 
 const tvhelperCss = `
   /* @import "https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/bulma/0.9.3/css/bulma-rtl.min.css"; */
@@ -747,10 +747,10 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             <div class="notification is-warning" style="display: ${!isLogin ? 'block' : 'none'};">
               未登录，
               <a
-                href="https://www.iwencai.com/unifiedwap/home/index/"
-                title="在同花顺问财登录，可同时登录同花顺主站 10jqka.com.cn"
+                href="https://www.10jqka.com.cn/"
+                title="若无法加载自选板块，请登录后点击同花顺主页的“问财”"
                 rel="noopener noreferrer"
-                target="_blank">到同花顺问财官网登录</a>
+                target="_blank">到同花顺官网登录</a>
             </div>
             <aside class="menu">
               ${plateData.map((g, gi) => html`<${Plate} group=${g} groupid=${gi} /`)}
