@@ -12,3 +12,7 @@
 - [x] 股票代码模糊搜索（接管 Tradingview 的搜索，点击小窗右上角的搜索按钮启用）
 - [x] 分时走势图（鼠标移至小窗中涨幅标签上即可显示）
 - [ ] ...其他
+
+## 相关
+
+[a-udf](https://github.com/xiaopc/a-udf)：charting_library 自建 Tradingview 的数据源接口
