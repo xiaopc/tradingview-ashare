@@ -2,7 +2,7 @@
 // @name         Tradingview A股助手
 // @namespace    https://github.com/xiaopc/tradingview-ashare
 // @description  给 Tradingview 增加同花顺同步、拼音搜索等功能
-// @version      0.7.2
+// @version      0.7.3
 // @author       xiaopc
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
@@ -452,7 +452,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
     };
     const gtSuggest = async (text) => {
         const arr = await gtSuggestRaw(text);
-        const typeMap = {GP: 'stock', 'GP-A': 'stock', ZS: 'index', ETF: 'fund', LOF: 'fund', 'QDII-LOF': 'fund'}; // KJ: 'fund'
+        const typeMap = {GP: 'stock', 'GP-A': 'stock', 'GP-A-KCB': 'stock', ZS: 'index', ETF: 'fund', LOF: 'fund', 'QDII-LOF': 'fund'}; // KJ: 'fund'
         return arr.map(i => {
             const [type, description] = [typeMap[i[4]], i[2]];
             if (type == undefined) return null;
