@@ -2,7 +2,7 @@
 // @name         Tradingview A股助手
 // @namespace    https://github.com/xiaopc/tradingview-ashare
 // @description  给 Tradingview 增加同花顺同步、拼音搜索等功能
-// @version      0.7.3
+// @version      0.7.5
 // @author       xiaopc
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
@@ -405,8 +405,10 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             GM_xmlhttpRequest({
                 method: 'GET',
                 url: 'https://qt.gtimg.cn/q=' + ids.join(','),
+                responseType: 'arraybuffer',
                 onload: function (response) {
-                    resolve(_.fromPairs(response.responseText.split('\n').filter(l => l.length > 2).map(l => {
+                    const responseText = new TextDecoder('gbk').decode(response.response);
+                    resolve(_.fromPairs(responseText.split('\n').filter(l => l.length > 2).map(l => {
                         let [key, val] = l.split('=');
                         return [key.slice(2), val.slice(1, -2)];
                     })));
