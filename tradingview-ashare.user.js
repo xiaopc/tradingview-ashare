@@ -2,7 +2,7 @@
 // @name         Tradingview A股助手
 // @namespace    https://github.com/xiaopc/tradingview-ashare
 // @description  给 Tradingview 增加同花顺同步、拼音搜索等功能
-// @version      0.7.5
+// @version      0.7.6
 // @author       xiaopc
 // @updateURL    https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
 // @downloadURL  https://raw.githubusercontent.com/xiaopc/tradingview-ashare/main/tradingview-ashare.user.js
@@ -558,7 +558,7 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
     let latestSearchKw = null, latestSearchRes = null;
     const updateTvSymbol = (id) => {
         if (typeof tvChart?.setSymbol != 'function') return;
-        tvChart.setSymbol(toTvSymbol(id));
+        tvChart.setSymbol(toTvSymbol(id), null, tvChart._subscribedChartWidget);
     };
     const hookedTvSearch = async (...args) => {
         const [resource, config] = args;
@@ -604,9 +604,9 @@ const svgSprite = `<svg width="0" height="0" class="hidden"><symbol xmlns="http:
             tvChart.setSymbol = (...args) => {
                 setCurSymbolTv(fromTvSymbol(args[0]));
                 if (latestSearchKw == args[0] && latestSearchRes.length > 0) {
-                    originalSetSymbol(latestSearchRes[0].symbol);
+                    return originalSetSymbol.bind(tvChart)(latestSearchRes[0].symbol, null, tvChart._subscribedChartWidget);
                 } else {
-                    originalSetSymbol(...args);
+                    return originalSetSymbol.bind(tvChart)(...args);
                 }
             };
         }, []);
